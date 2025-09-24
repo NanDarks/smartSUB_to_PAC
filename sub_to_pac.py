@@ -14,7 +14,6 @@ def get_proxies_from_sub_link(sub_link):
     """
     proxies = []
     try:
-        # **NEW: Remove fragment from URL before fetching**
         parsed_url = urllib.parse.urlparse(sub_link)
         clean_url = parsed_url.scheme + "://" + parsed_url.netloc + parsed_url.path + "?" + parsed_url.query
         
@@ -23,7 +22,17 @@ def get_proxies_from_sub_link(sub_link):
             print(f"Error fetching subscription link: {sub_link} - Status: {response.status_code}")
             return proxies
         
-        decoded_content = base64.b64decode(response.text).decode('utf-8')
+        content = response.text
+        decoded_content = ""
+
+        # Attempt to decode as Base64 first
+        try:
+            clean_content = re.sub(r'[^a-zA-Z0-9+/=]', '', content)
+            decoded_content = base64.b64decode(clean_content).decode('utf-8')
+            print("Content was successfully decoded from Base64.")
+        except (base64.binascii.Error, UnicodeDecodeError) as e:
+            print(f"Content is likely not Base64. Falling back to plain text parsing. Error: {e}")
+            decoded_content = content
         
         patterns = {
             'vless': r'vless://(?:[^@]+@)?(\d{1,3}(?:\.\d{1,3}){3}|\[[0-9a-f:]+\]):(\d+)',
