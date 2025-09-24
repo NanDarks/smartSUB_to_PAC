@@ -5,6 +5,7 @@ import re
 import os
 import random
 import json
+import urllib.parse
 
 def get_proxies_from_sub_link(sub_link):
     """
@@ -13,7 +14,11 @@ def get_proxies_from_sub_link(sub_link):
     """
     proxies = []
     try:
-        response = requests.get(sub_link, timeout=15)
+        # **NEW: Remove fragment from URL before fetching**
+        parsed_url = urllib.parse.urlparse(sub_link)
+        clean_url = parsed_url.scheme + "://" + parsed_url.netloc + parsed_url.path + "?" + parsed_url.query
+        
+        response = requests.get(clean_url, timeout=15)
         if response.status_code != 200:
             print(f"Error fetching subscription link: {sub_link} - Status: {response.status_code}")
             return proxies
