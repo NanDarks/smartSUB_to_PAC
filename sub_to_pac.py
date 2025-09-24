@@ -25,7 +25,7 @@ def get_proxies_from_sub_link(sub_link):
         content = response.text
         decoded_content = ""
 
-        # **NEW: Attempt to parse as JSON first**
+        # Attempt to parse as JSON first
         try:
             json_data = json.loads(content)
             if "proxies" in json_data:
@@ -92,10 +92,11 @@ def generate_pac_file(proxies, filename="proxy.pac"):
     
     obfuscation_comment = f"// Generated at {os.environ.get('GITHUB_RUN_ID', 'N/A')}\n"
     
-    filtered_domains = [
-        "*.youtube.com", "*.googlevideo.com", "*.twitter.com", "*.instagram.com",
-        "*.telegram.org", "*.wikipedia.org", "*.facebook.com", "*.linkedin.com",
-        "*.tiktok.com"
+    # **NEW: List of domains to NOT proxy**
+    direct_domains = [
+        "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16",
+        "*.ir", "ir", "iran", "irib", "mihan", "telewebion",
+        "*.mihanblog.com", "*.mihanb.com", "*.irna.ir", "*.farsnews.com"
     ]
 
     function_name = "findProxyForURL"
@@ -106,17 +107,17 @@ def generate_pac_file(proxies, filename="proxy.pac"):
 function {function_name}({url_param}, {host_param}) {{
   var myProxy = "PROXY {selected_proxy}; SOCKS5 {selected_proxy}";
 
-  var domains_to_proxy = [
-    {",\n    ".join([f'"{d}"' for d in filtered_domains])}
+  var domains_to_direct = [
+    {",\n    ".join([f'"{d}"' for d in direct_domains])}
   ];
   
-  for (var i = 0; i < domains_to_proxy.length; i++) {{
-    if (shExpMatch({host_param}, domains_to_proxy[i])) {{
-      return myProxy;
+  for (var i = 0; i < domains_to_direct.length; i++) {{
+    if (shExpMatch({host_param}, domains_to_direct[i])) {{
+      return "DIRECT";
     }}
   }}
 
-  return "DIRECT";
+  return myProxy;
 }}
 """
     with open(filename, "w") as f:
