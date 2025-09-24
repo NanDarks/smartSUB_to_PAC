@@ -25,13 +25,25 @@ def get_proxies_from_sub_link(sub_link):
         content = response.text
         decoded_content = ""
 
-        # Attempt to decode as Base64 first
+        # **NEW: Attempt to parse as JSON first**
+        try:
+            json_data = json.loads(content)
+            if "proxies" in json_data:
+                for proxy in json_data["proxies"]:
+                    if "server" in proxy and "port" in proxy:
+                        proxies.append(f"{proxy['server']}:{proxy['port']}")
+                print("Content was successfully parsed as JSON.")
+                return proxies
+        except json.JSONDecodeError:
+            print("Content is not JSON. Trying other formats...")
+        
+        # Fallback to Base64/plain text if JSON parsing fails
         try:
             clean_content = re.sub(r'[^a-zA-Z0-9+/=]', '', content)
             decoded_content = base64.b64decode(clean_content).decode('utf-8')
             print("Content was successfully decoded from Base64.")
-        except (base64.binascii.Error, UnicodeDecodeError) as e:
-            print(f"Content is likely not Base64. Falling back to plain text parsing. Error: {e}")
+        except (base64.binascii.Error, UnicodeDecodeError):
+            print("Content is likely not Base64. Falling back to plain text parsing.")
             decoded_content = content
         
         patterns = {
