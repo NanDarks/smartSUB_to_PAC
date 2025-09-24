@@ -4,6 +4,7 @@ import base64
 import re
 import os
 import random
+import json
 
 def get_proxies_from_sub_link(sub_link):
     """
@@ -25,7 +26,6 @@ def get_proxies_from_sub_link(sub_link):
             'ss': r'ss://(?:[^@]+@)?(\d{1,3}(?:\.\d{1,3}){3}|\[[0-9a-f:]+\]):(\d+)'
         }
         
-        # Add Vmess pattern which is a bit different
         vmess_matches = re.findall(r'vmess://(.*?)(?=\s|$)', decoded_content)
         for match in vmess_matches:
             try:
@@ -35,7 +35,6 @@ def get_proxies_from_sub_link(sub_link):
             except Exception as e:
                 print(f"Failed to decode Vmess config: {e}")
 
-        # Find and extract IP:Port from other formats
         for p_type, pattern in patterns.items():
             found_proxies = re.findall(pattern, decoded_content)
             for proxy in found_proxies:
@@ -63,7 +62,6 @@ def generate_pac_file(proxies, filename="proxy.pac"):
         print("No proxies available to generate PAC file.")
         return
 
-    # Select a random proxy from the list
     selected_proxy = random.choice(proxies)
     
     obfuscation_comment = f"// Generated at {os.environ.get('GITHUB_RUN_ID', 'N/A')}\n"
@@ -107,7 +105,7 @@ if __name__ == "__main__":
         sys.exit(1)
     
     sub_links_str = sys.argv[1]
-    sub_links = [link.strip() for link in sub_links_str.split(',')]
+    sub_links = [link.strip() for link in sub_links_str.split('\n') if link.strip()]
     
     all_proxies = []
     for link in sub_links:
