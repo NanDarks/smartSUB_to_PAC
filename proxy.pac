@@ -1,7 +1,7 @@
-// Generated at 18003438603
+// Generated at 18004962816
 
 function findProxyForURL(url_address, host_address) {
-  var myProxy = "PROXY www.speedtest.net:443; SOCKS5 www.speedtest.net:443";
+  var myProxy = "PROXY 6-6-6-l28.pages.dev:443; SOCKS5 6-6-6-l28.pages.dev:443";
 
   var domains_to_direct = [
     "10.0.0.0/8",
