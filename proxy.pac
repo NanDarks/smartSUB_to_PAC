@@ -1,7 +1,7 @@
-// Generated at 18020116746
+// Generated at 18021424149
 
 function findProxyForURL(url_address, host_address) {
-  var myProxy = "PROXY 2606:4700:310c::ac42:2ceb:443; SOCKS5 2606:4700:310c::ac42:2ceb:443";
+  var myProxy = "PROXY NanDark.ir:443; SOCKS5 NanDark.ir:443";
 
   var domains_to_direct = [
     "10.0.0.0/8",
