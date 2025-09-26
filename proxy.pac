@@ -1,7 +1,7 @@
-// Generated at 18025810269
+// Generated at 18026753496
 
 function findProxyForURL(url_address, host_address) {
-  var myProxy = "PROXY 172.66.47.21:443; SOCKS5 172.66.47.21:443";
+  var myProxy = "PROXY cdn.petcut.ir:443; SOCKS5 cdn.petcut.ir:443";
 
   var domains_to_direct = [
     "10.0.0.0/8",
